@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQCHARTE</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.min.js"></script>
+</head>
+<body>
+    <header class="bg-dark text-white p-3">
+        <h1>SQCHARTE</h1>
+    </header>
+
+    <div class="container my-3">
+        <div class="row">
+            <div class="col-md-6">
+                <div id="gameContainer"></div>  <!-- Contenedor para el primer juego -->
+            </div>
+            <div class="col-md-6">
+                <div id="waveContainer"></div> <!-- Contenedor para el segundo juego -->
+            </div>
+        </div>
+    </div>
+    <footer class="bg-black text-white text-center p-3">
+        © 2024 SQCHARTE
+    </footer>
+    <script>
+        // Primer sketch: Super Tornado
+        new p5((sketch) => {
+            let clicked = 0;
+            let value = 0;
+
+            sketch.setup = () => {
+                sketch.createCanvas(400, 400).parent('gameContainer');
+                sketch.noStroke();
+            };
+
+            sketch.draw = () => {
+                sketch.background(30);
+                sketch.translate(sketch.width / 2, sketch.height / 2);
+                Super_Tornado(sketch);
+            };
+
+            sketch.mouseClicked = () => {
+                if (clicked < 5) {
+                    clicked++;
+                    value++;
+                } else {
+                    clicked = 0;
+                    value = 0;
+                }
+            };
+
+            function Super_Tornado(p) {
+                p.fill(255);
+                for (let i = 0; i <= 360; i += 0.1) {
+                    let theta = p.radians(i * p.frameCount * 0.01);
+                    let x, y;
+                    switch (value) {
+                        case 0:
+                            x = p.cos(theta) * i;
+                            y = p.sin(theta) * i;
+                            break;
+                        case 1:
+                            x = p.cos(1 / theta) * i * p.tan(i);
+                            y = p.sin(1 / theta) * i * p.tan(i);
+                            break;
+                        case 2:
+                            x = p.cos(theta) * p.log(i) * p.tan(i);
+                            y = p.sin(1 / theta) * p.log(i) * p.tan(i);
+                            break;
+                        case 3:
+                            x = p.cos(theta) * i * p.tan(i);
+                            y = p.sin(p.log(theta)) * i / p.tan(i);
+                            break;
+                        case 4:
+                            x = p.cos(theta) * i / 3 * p.sin(theta) * p.tan(p.frameCount * 0.01 + 1);
+                            y = p.sin(1 / theta) * i / 3 * p.log(i) * p.tan(i);
+                            break;
+                    }
+                    p.ellipse(x, y, 3, 3);
+                }
+            }
+        });
+
+        // Segundo sketch: Ondas
+        new p5((sketch) => {
+            let angle = 0;
+
+            sketch.setup = () => {
+                sketch.createCanvas(400, 400).parent('waveContainer');
+                sketch.background(255);
+            };
+
+            sketch.draw = () => {
+                sketch.translate(sketch.width / 2, sketch.height / 2);
+                wavePattern(sketch);
+            };
+
+            sketch.mousePressed = () => {
+                angle += sketch.PI; // Altera la fase de la onda para cambiar el patrón
+            };
+
+            function wavePattern(p) {
+                let offset = 0;
+                for (let y = -p.height / 2; y < p.height / 2; y += 8) {
+                    p.fill((p.sin(angle + offset) > 0) ? 255 : 0);
+                    p.noStroke();
+                    let h = p.map(p.sin(angle + offset), -1, 1, 20, 40); // Altura de las ondas
+                    p.rect(-p.width / 2, y, p.width, h);
+                    offset += 0.1;
+                }
+                angle += 0.05;
+            }
+        });
+    </script>
+</body>
+</html>
